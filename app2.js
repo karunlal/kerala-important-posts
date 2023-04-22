@@ -1,4 +1,5 @@
 const url = 'https://script.google.com/macros/s/AKfycbxOm6L9IwZhtJfGYl1OQET_aIkfeybnpECqGH9iqir2iGRTldbq3OTD3M9EHfomJKhu/exec';
+
 const output = document.querySelector('.output');
 const game = { question: 0, total: 0, data: [], score: 0 };
 
@@ -62,17 +63,47 @@ function loaderQuestion() {
 
     const showButton = maker('button', 'Show More Details', 'btn', div);
     showButton.classList.add('show-button');
+    if (val.moreDetails) {
+      showButton.classList.add('details-available');
+    }
     showButton.addEventListener('click', () => {
-      const details = maker('div', val.moreDetails, 'details', div);
-      showButton.style.display = 'none';
+      if (val.moreDetails) {
+        const details = maker('div', val.moreDetails, 'details', div);
+        showButton.style.display = 'none';
+      }
+    });
+
+    // Add previous question button
+    const prevButton = maker('button', 'Previous Question', 'btn', div);
+    prevButton.classList.add('prev-button');
+    if (game.question === 0) {
+      prevButton.disabled = true;
+    }
+    prevButton.addEventListener('click', () => {
+      game.question--;
+      loaderQuestion();
+    });
+
+    // Add next question button
+    const nextButton = maker('button', 'Next Question', 'btn', div);
+    nextButton.classList.add('next-button');
+    if (game.question === game.total - 1) {
+      nextButton.textContent = 'End Game';
+    }
+    nextButton.addEventListener('click', () => {
+      game.question++;
+      loaderQuestion();
     });
   }
 }
+
+
 
 function showDetails(e) {
   const parent = e.target.parentElement;
   const val = parent.myObj;
   const moreDetails = maker('div', val.moreDetails, 'more-details', parent);
+  moreDetails.style.fontSize = '50px';
   parent.removeChild(e.target);
 }
 
@@ -139,5 +170,8 @@ function maker(eleType, html, cla, parent) {
   const ele = document.createElement(eleType);
   ele.innerHTML = html;
   ele.classList.add(cla);
+  if (cla === 'details') {
+    ele.style.fontSize = '50px';
+  }
   return parent.appendChild(ele);
 }
